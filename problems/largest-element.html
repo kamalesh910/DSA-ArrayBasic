@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linked List Middle Finder</title>
+    <style>
+        body { background-color: #121212; color: white; font-family: Arial, sans-serif; text-align: center; }
+        canvas { border: 2px solid white; display: block; margin: 20px auto; background-color: #222; }
+        .buttons { text-align: center; margin-top: 10px; }
+        button { padding: 12px 24px; margin: 5px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; }
+        #questionBtn { background-color: #ff9800; color: white; }
+        #solutionBtn { background-color: #4caf50; color: white; }
+        button:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <h1>Find the Middle of a Linked List</h1>
+    <div class="buttons">
+        <button id="questionBtn">Show Question</button>
+        <button id="solutionBtn">Show Solution</button>
+    </div>
+    <canvas id="canvas" width="900" height="300"></canvas>
+    
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const questionBtn = document.getElementById("questionBtn");
+        const solutionBtn = document.getElementById("solutionBtn");
+
+        const nodes = [10, 20, 30, 40, 50, 60, 70];
+        let slowIndex = 0, fastIndex = 0;
+
+        function drawNodes(showSolution = false) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            nodes.forEach((value, index) => {
+                ctx.beginPath();
+                ctx.arc(100 + index * 100, 150, 35, 0, 2 * Math.PI);
+                ctx.fillStyle = showSolution ? (index === slowIndex ? "blue" : (index === fastIndex ? "red" : "gray")) : "gray";
+                ctx.fill();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.fillStyle = "white";
+                ctx.font = "20px Arial";
+                ctx.fillText(value, 90 + index * 100, 155);
+            });
+
+            if (showSolution && fastIndex >= nodes.length - 1) {
+                ctx.fillStyle = "yellow";
+                ctx.font = "24px Arial";
+                ctx.fillText("Middle Element: " + nodes[slowIndex], 350, 270);
+            }
+        }
+
+        function movePointers() {
+            if (fastIndex < nodes.length - 1) {
+                slowIndex += 1;
+                fastIndex += 2;
+                drawNodes(true);
+                setTimeout(movePointers, 1000);
+            }
+        }
+
+        questionBtn.addEventListener("click", () => {
+            drawNodes(false);
+        });
+
+        solutionBtn.addEventListener("click", () => {
+            slowIndex = 0;
+            fastIndex = 0;
+            drawNodes(true);
+            setTimeout(movePointers, 1000);
+        });
+
+        drawNodes(false);
+    </script>
+</body>
+</html>

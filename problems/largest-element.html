@@ -3,78 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linked List Middle Finder</title>
+    <title>Find Largest Element</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #121212; color: white; font-family: Arial, sans-serif; text-align: center; }
-        canvas { border: 2px solid white; display: block; margin: 20px auto; background-color: #222; }
-        .buttons { text-align: center; margin-top: 10px; }
-        button { padding: 12px 24px; margin: 5px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; }
-        #questionBtn { background-color: #ff9800; color: white; }
-        #solutionBtn { background-color: #4caf50; color: white; }
-        button:hover { opacity: 0.8; }
+        body { background-color: #121212; color: white; text-align: center; }
+        .box { font-size: 24px; font-weight: bold; padding: 15px; border-radius: 8px; }
+        .largest { background-color: #ff9800; color: black; }
+        .normal { background-color: #007bff; }
+        .code-window { background-color: #1e1e1e; padding: 20px; border-radius: 8px; text-align: left; }
+        .code-tabs { display: flex; justify-content: center; margin-bottom: 10px; }
+        .code-tabs button { background-color: #333; color: white; border: none; padding: 10px; cursor: pointer; }
+        .code-tabs button.active { background-color: #ff9800; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
     </style>
 </head>
 <body>
-    <h1>Find the Middle of a Linked List</h1>
-    <div class="buttons">
-        <button id="questionBtn">Show Question</button>
-        <button id="solutionBtn">Show Solution</button>
+    <div class="container mt-5">
+        <h1 class="mb-4">Find the Largest Element in an Array</h1>
+        <div id="arrayDisplay" class="d-flex justify-content-center gap-3"></div>
+        <button class="btn btn-warning mt-4" onclick="findLargestVisual()">Find Largest</button>
+        
+        <h2 class="mt-5">Code Solution</h2>
+        <div class="code-tabs">
+            <button class="active" onclick="showCode('java')">Java</button>
+            <button onclick="showCode('js')">JavaScript</button>
+        </div>
+        <div class="code-window">
+            <pre id="codeDisplay" class="text-white"></pre>
+        </div>
     </div>
-    <canvas id="canvas" width="900" height="300"></canvas>
-    
+
     <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        const questionBtn = document.getElementById("questionBtn");
-        const solutionBtn = document.getElementById("solutionBtn");
+        const arr = [3, 7, 2, 8, 5, 10, 6];
+        const container = document.getElementById('arrayDisplay');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const codeTabs = document.querySelectorAll('.code-tabs button');
 
-        const nodes = [10, 20, 30, 40, 50, 60, 70];
-        let slowIndex = 0, fastIndex = 0;
+        const codeSolutions = {
+            java: `public class LargestElement {
+    public static int findLargest(int[] arr) {
+        if (arr.length == 0) throw new IllegalArgumentException("Array is empty!");
+        int max = arr[0];
+        for (int num : arr) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
+    public static void main(String[] args) {
+        int[] arr = {3, 7, 2, 8, 5, 10, 6};
+        System.out.println("Largest element: " + findLargest(arr));
+    }
+}`,
+            js: `function findLargest(arr) {
+    if (arr.length === 0) throw new Error("Array is empty!");
+    let max = arr[0];
+    for (let num of arr) {
+        if (num > max) {
+            max = num;
+        }
+    }
+    return max;
+}
 
-        function drawNodes(showSolution = false) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            nodes.forEach((value, index) => {
-                ctx.beginPath();
-                ctx.arc(100 + index * 100, 150, 35, 0, 2 * Math.PI);
-                ctx.fillStyle = showSolution ? (index === slowIndex ? "blue" : (index === fastIndex ? "red" : "gray")) : "gray";
-                ctx.fill();
-                ctx.strokeStyle = "white";
-                ctx.lineWidth = 3;
-                ctx.stroke();
-                ctx.fillStyle = "white";
-                ctx.font = "20px Arial";
-                ctx.fillText(value, 90 + index * 100, 155);
+const arr = [3, 7, 2, 8, 5, 10, 6];
+console.log("Largest element:", findLargest(arr));`
+        };
+
+        function displayArray(highlightIndex = -1) {
+            container.innerHTML = "";
+            arr.forEach((num, index) => {
+                const div = document.createElement("div");
+                div.className = `box ${index === highlightIndex ? 'largest' : 'normal'}`;
+                div.innerText = num;
+                container.appendChild(div);
             });
-
-            if (showSolution && fastIndex >= nodes.length - 1) {
-                ctx.fillStyle = "yellow";
-                ctx.font = "24px Arial";
-                ctx.fillText("Middle Element: " + nodes[slowIndex], 350, 270);
-            }
         }
 
-        function movePointers() {
-            if (fastIndex < nodes.length - 1) {
-                slowIndex += 1;
-                fastIndex += 2;
-                drawNodes(true);
-                setTimeout(movePointers, 1000);
+        function findLargestVisual() {
+            let maxIndex = 0;
+            for (let i = 1; i < arr.length; i++) {
+                if (arr[i] > arr[maxIndex]) {
+                    maxIndex = i;
+                }
             }
+            displayArray(maxIndex);
         }
 
-        questionBtn.addEventListener("click", () => {
-            drawNodes(false);
-        });
+        function showCode(lang) {
+            codeDisplay.innerText = codeSolutions[lang];
+            codeTabs.forEach(btn => btn.classList.remove("active"));
+            event.target.classList.add("active");
+        }
 
-        solutionBtn.addEventListener("click", () => {
-            slowIndex = 0;
-            fastIndex = 0;
-            drawNodes(true);
-            setTimeout(movePointers, 1000);
-        });
-
-        drawNodes(false);
+        displayArray();
+        showCode('java');
     </script>
 </body>
 </html>
